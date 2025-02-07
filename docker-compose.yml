@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  storybook:
+    build: .
+    ports:
+      - "6006:6006"
+    volumes:
+      # ホストのカレントディレクトリをコンテナ内の /app にマウント（ソースコードの変更を反映）
+      - .:/app
+      # node_modules はホスト側のファイルと競合しないように、コンテナ側のものを使用
+      - /app/node_modules
+    environment:
+      # Docker 上でファイル変更を確実に検知するために polling を有効にする場合
+      - CHOKIDAR_USEPOLLING=true
+
+  app:
+    build: .
+    command: npm run dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
